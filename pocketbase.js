@@ -1,15 +1,16 @@
+// pocketbase.js
 import PocketBase from 'pocketbase';
 
-// Configuración directa (reemplaza con tus credenciales reales)
+// Configuración directa
 const PB_URL = 'http://127.0.0.1:8090';
-const ADMIN_EMAIL = 'gmolina.dev@gmail.com'; 
-const ADMIN_PASSWORD = 'anyand21.'; 
+const ADMIN_EMAIL = 'gmolina.dev@gmail.com';
+const ADMIN_PASSWORD = 'anyand21.';
 
 // Instancia principal de PocketBase para operaciones de usuario
 const pb = new PocketBase(PB_URL);
 
 // Función para autenticación admin (para operaciones de servidor)
-async function authAsAdmin() {
+export async function authAsAdmin() {
   const adminPb = new PocketBase(PB_URL);
   try {
     await adminPb.admins.authWithPassword(ADMIN_EMAIL, ADMIN_PASSWORD);
@@ -45,9 +46,8 @@ export function isLoggedIn() {
 // Obtener usuario actual con información transformada
 export function currentUser() {
   if (!pb.authStore.isValid) return null;
-  
+
   const userData = pb.authStore.model;
-  // Si es un usuario normal (no admin)
   if (userData) {
     const user = {
       id: userData.id,
@@ -58,7 +58,7 @@ export function currentUser() {
       created: userData.created,
       updated: userData.updated,
       rol: userData.rol || 'user',
-      isAdmin: userData.rol === 'admin', // Para compatibilidad
+      isAdmin: userData.rol === 'admin',
     };
     return user;
   }
@@ -75,11 +75,42 @@ export async function registerUser(userData) {
   try {
     const newUser = await pb.collection('users').create({
       ...userData,
-      rol: userData.rol || 'user' // Asignar rol por defecto si no viene especificado
+      rol: userData.rol || 'user'
     });
     return newUser;
   } catch (err) {
     console.error('❌ Error al registrar usuario:', err.message);
     throw new Error('Error al registrar el usuario');
+  }
+}
+
+// 🛒 Función para guardar un pedido
+export async function savePedido(nombre, productos, telefono, sucursalId = 'default') {
+  const adminPb = await authAsAdmin();
+
+  // Crear resumen legible
+  const resumen = productos.map(p => {
+    const cantidad = p.cantidad || 1;
+    const dosisText = p.dosis ? ` (${p.dosis})` : '';
+    return `${cantidad}x ${p.producto}${dosisText}`;
+  }).join('\n');
+
+  // Preparar datos para PocketBase
+  const data = {
+    nombre_cliente: nombre,
+    telefono_cliente: telefono,
+    sucursal_id: sucursalId,
+    resumen: resumen,
+    resultado_json: JSON.stringify(productos),
+    estado: 'pendiente'
+  };
+
+  try {
+    const record = await adminPb.collection('pedidos').create(data);
+    console.log('✅ Pedido guardado:', record.id);
+    return record;
+  } catch (error) {
+    console.error('❌ Error al guardar pedido en PocketBase:', error);
+    throw error;
   }
 }
