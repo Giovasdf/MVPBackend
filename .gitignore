@@ -1,0 +1,6 @@
+# Ignorar la carpeta de autenticación de whatsapp-web.js
+.wwebjs_auth/
+node_modules/
+.wwebjs_cache/
+.DS_Store
+/whatsapp_qr
