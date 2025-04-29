@@ -118,7 +118,7 @@ app.post('/webhook', async (req, res) => {
     if (!estadosConversacion.has(from)) {
       estadosConversacion.set(from, 'aceptar_terminos');
       
-      const terminosURL = process.env.TERMINOS_URL || 'https://tudominio.com/terminos-y-condiciones';
+      const terminosURL = process.env.TERMINOS_URL || 'https://mvpproyectotitulo-production.up.railway.app/terminoscondiciones';
       const twiml = new twilio.twiml.MessagingResponse();
       
       twiml.message(

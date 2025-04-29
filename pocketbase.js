@@ -2,7 +2,7 @@
 import PocketBase from 'pocketbase';
 
 // Configuración directa
-const PB_URL = 'http://127.0.0.1:8090';
+const PB_URL = 'https://database-mvp-production.up.railway.app';
 const ADMIN_EMAIL = 'gmolina.dev@gmail.com';
 const ADMIN_PASSWORD = 'anyand21.';
 
