@@ -3,33 +3,41 @@ import axios from 'axios'
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || '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'
 
 export async function parsePedido(nombre, texto) {
-  const prompt = `
-Eres un asistente de farmacia que recibe pedidos escritos informalmente. Convierte el siguiente texto en un JSON válido con el siguiente formato:
+  const prompt = `Eres un asistente de farmacia especializado en procesar pedidos de medicamentos. Analiza el siguiente texto y:
 
+1. Si es claramente un pedido de medicamentos/fármacos, conviértelo a JSON con el formato especificado.
+2. Si NO es un pedido de medicamentos (ej: preguntas generales, otros productos), responde exactamente con: "NO_ES_PEDIDO"
+
+Formato JSON requerido para pedidos válidos:
 [
   {
-    "producto": "nombre del producto",
-    "cantidad": número entero (por defecto 1),
-    "dosis": "formato opcional" (ej. "500mg", "10ml"),
-    "requiereReceta": boolean (true si es controlado o necesita receta médica)
+    "producto": "nombre genérico del medicamento",
+    "cantidad": número entero (default 1),
+    "dosis": "formato opcional" (ej: "500mg"),
+    "requiereReceta": boolean (true solo para medicamentos controlados)
   }
 ]
 
-Instrucciones:
-- Si un número aparece junto al nombre del producto (como "panadol 300"), asume que puede ser una dosis (por ejemplo, 300mg), NO la cantidad.
-- Si el número representa claramente una cantidad (ej: "2 cajas de paracetamol"), úsalo como 'cantidad'.
-- Si no se especifica una cantidad, asume 1.
-- No inventes dosis ni cantidades si no están presentes.
-- Usa nombres genéricos de medicamentos si es posible.
-- Usa 'requiereReceta: true' solo si el producto es comúnmente controlado o requiere receta en farmacias.
+Reglas estrictas de procesamiento:
+1. Números junto al nombre = posible dosis (ej: "paracetamol 500" → "500mg")
+2. Números antes del producto = cantidad (ej: "2 ibuprofenos" → cantidad: 2)
+3. Sin cantidad especificada → default 1
+4. Sin dosis especificada → campo vacío ""
+5. requiereReceta: true SOLO para:
+   - Antibióticos (amoxicilina, etc.)
+   - Opioides (tramadol, codeína)
+   - Psicotrópicos
+   - Otros medicamentos claramente controlados
+6. NUNCA inventes dosis/cantidades no especificadas
+7. Usa nombres genéricos (ej: "acetaminofén" en lugar de marcas como "Tylenol")
 
-Ejemplo:
-Texto: "quiero 1 caja de amoxicilina 500mg y aspirina"
-Resultado:
+Ejemplos:
+Texto: "2 cajas de amoxicilina 500 y una aspirina"
+Salida: 
 [
   {
     "producto": "amoxicilina",
-    "cantidad": 1,
+    "cantidad": 2,
     "dosis": "500mg",
     "requiereReceta": true
   },
@@ -41,12 +49,26 @@ Resultado:
   }
 ]
 
-Texto del pedido:
+Texto: "¿Qué hora es?"
+Salida: "NO_ES_PEDIDO"
+
+Texto: "necesito panadol y 2 cepillos de dientes"
+Salida: 
+[
+  {
+    "producto": "paracetamol",
+    "cantidad": 1,
+    "dosis": "",
+    "requiereReceta": false
+  }
+]
+
+Texto del pedido a procesar:
 """
 ${texto.trim()}
 """
 
-Devuelve SOLO el JSON, sin explicaciones ni comentarios.
+Respuesta EXCLUSIVAMENTE con el JSON válido o "NO_ES_PEDIDO", sin comentarios adicionales.
 `
 ;
 

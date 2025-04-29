@@ -45,24 +45,20 @@ function esListo(respuesta) {
   return ['listo', 'terminar', 'finalizar', 'ready', 'fin', 'done'].includes(normalizada);
 }
 
-// Función para guardar pedido en PocketBase
 async function savePedido(nombre, productos, telefono) {
     try {
       const pbAdmin = await authAsAdmin();
-      
-      // Crear resumen legible
+      const SUCURSAL_ID = '81w8ac71eg86236'; // ID fijo de sucursal
+  
+      // 1. Crear el pedido principal
       const resumen = productos.map(p => {
         const cantidad = p.cantidad || 1;
         const dosis = p.dosis ? ` (${p.dosis})` : '';
         const receta = p.requiereReceta ? ' (Requiere receta)' : '';
         return `${cantidad}x ${p.producto}${dosis}${receta}`;
       }).join('\n');
-      
-      // ID fijo de sucursal que mencionaste
-      const SUCURSAL_ID = '81w8ac71eg86236';
-      
-      // Preparar datos para PocketBase
-      const data = {
+  
+      const dataPedido = {
         nombre_cliente: nombre,
         telefono_cliente: telefono,
         resumen: resumen,
@@ -71,13 +67,33 @@ async function savePedido(nombre, productos, telefono) {
         sucursal_id: SUCURSAL_ID
       };
   
-      console.log('📝 Datos a enviar a PocketBase:', JSON.stringify(data, null, 2));
-      
-      const pedido = await pbAdmin.collection('pedidos').create(data);
-      console.log('✅ Pedido guardado en PocketBase:', pedido.id);
+      console.log('📝 Creando pedido principal...');
+      const pedido = await pbAdmin.collection('pedidos').create(dataPedido);
+      console.log('✅ Pedido principal creado:', pedido.id);
+  
+      // 2. Guardar cada producto individualmente
+      console.log('📦 Guardando productos del pedido...');
+      for (const producto of productos) {
+        const dataProducto = {
+          pedido_id: pedido.id,
+          nombre_producto: producto.producto,
+          dosis: producto.dosis || '',
+          cantidad: producto.cantidad || 1,
+          observaciones: producto.requiereReceta ? 'Requiere receta médica' : ''
+        };
+  
+        try {
+          const productoGuardado = await pbAdmin.collection('productos_pedido').create(dataProducto);
+          console.log(`   ✔ Producto guardado: ${producto.producto} (ID: ${productoGuardado.id})`);
+        } catch (err) {
+          console.error(`   ❌ Error al guardar producto ${producto.producto}:`, err.message);
+          // Continuar con los siguientes productos aunque falle uno
+        }
+      }
+  
       return pedido;
     } catch (err) {
-      console.error('❌ Error detallado al guardar pedido:', {
+      console.error('❌ Error en el proceso completo:', {
         message: err.message,
         response: err.response?.data,
         stack: err.stack
@@ -97,10 +113,18 @@ app.post('/webhook', async (req, res) => {
     estadosConversacion.set(from, 'aceptar_terminos');
 
     const twiml = new twilio.twiml.MessagingResponse();
-    twiml.message(`¿Aceptas nuestros *Términos y Condiciones*? Responde con *Sí* o *No*`);
+    const terminosURL = 'https://tudominio.com/terminos-y-condiciones'; // Reemplaza con tu URL real
+    
+    twiml.message(
+        `📜 *Términos y Condiciones*\n\n` +
+        `Por favor lee nuestros términos y condiciones en:\n${terminosURL}\n\n` +
+        `¿Aceptas nuestros *Términos y Condiciones*?\n` +
+        `Responde con *Sí* o *No*`
+    );
+    
     res.type('text/xml').send(twiml.toString());
     return;
-  }
+}
 
   const estadoActual = estadosConversacion.get(from);
   const twiml = new twilio.twiml.MessagingResponse();
