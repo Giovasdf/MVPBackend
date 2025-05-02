@@ -4,6 +4,7 @@ import twilio from 'twilio';
 import { parsePedido } from './ia-parser.js';
 import { getPocketBase, authAsAdmin } from './pocketbase.js';
 import dotenv from 'dotenv';
+import cors from 'cors'
 
 // Configura variables de entorno
 dotenv.config();
@@ -19,6 +20,7 @@ const PORT = process.env.PORT || 3000;
 // Estados de conversación
 const estadosConversacion = new Map();  // chatId => estado
 const pedidosPendientes = new Map();    // chatId => pedido
+app.use(cors())
 
 // Middlewares
 app.use(bodyParser.urlencoded({ extended: false }));
