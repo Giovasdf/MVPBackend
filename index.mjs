@@ -20,8 +20,9 @@ const PORT = process.env.PORT || 3000;
 // Estados de conversación
 const estadosConversacion = new Map();  // chatId => estado
 const pedidosPendientes = new Map();    // chatId => pedido
-app.use(cors())
-
+app.use(cors({
+  origin: ['http://localhost:5173', 'https://mvp-backend-medibot-58d10f4f6b3e.herokuapp.com/']
+}));
 // Middlewares
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
