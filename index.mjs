@@ -245,6 +245,34 @@ app.post('/webhook', async (req, res) => {
   }
 });
 
+
+app.post('/twilio-test', async (req, res) => {
+  const { numero } = req.body;
+
+  if (!numero) {
+    return res.status(400).json({ success: false, error: 'Número no proporcionado' });
+  }
+
+  try {
+    const response = await client.messages.create({
+      to: `whatsapp:${numero}`,
+      from: 'whatsapp:+14155238886', // tu número de Twilio
+      contentSid: 'HXb5b62575e6e4ff6129ad7c8efe1f983e',
+      contentVariables: JSON.stringify({
+        "1": "12/1",
+        "2": "3pm"
+      })
+    });
+
+    console.log('✅ Mensaje enviado:', response.sid);
+    res.json({ success: true, sid: response.sid });
+  } catch (error) {
+    console.error('❌ Error enviando mensaje:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+
 // Ruta de salud para monitoreo
 app.get('/health', (req, res) => {
   res.status(200).json({ 
