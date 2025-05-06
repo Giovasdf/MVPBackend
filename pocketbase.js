@@ -4,7 +4,7 @@ import PocketBase from 'pocketbase';
 // Configuración directa
 const PB_URL = 'https://database-mvp-production.up.railway.app';
 const ADMIN_EMAIL = 'gmolina.dev@gmail.com';
-const ADMIN_PASSWORD = 'anyand21.';
+const ADMIN_PASSWORD = 'giovanni123.';
 
 // Instancia principal de PocketBase para operaciones de usuario
 const pb = new PocketBase(PB_URL);

@@ -5,6 +5,7 @@ import { parsePedido } from './ia-parser.js';
 import { getPocketBase, authAsAdmin } from './pocketbase.js';
 import dotenv from 'dotenv';
 import cors from 'cors'
+import { fileURLToPath } from 'url';
 
 // Configura variables de entorno
 dotenv.config();
@@ -28,7 +29,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
 
 // Función para normalizar respuestas
-function normalizarRespuesta(respuesta) {
+export function normalizarRespuesta(respuesta) {
   if (!respuesta) return '';
   
   return respuesta.trim().toLowerCase()
@@ -37,19 +38,19 @@ function normalizarRespuesta(respuesta) {
 }
 
 // Función para validar respuesta afirmativa
-function esAfirmativo(respuesta) {
+export function esAfirmativo(respuesta) {
   const normalizada = normalizarRespuesta(respuesta);
   return ['si', 'sí', 's', '1', 'yes', 'y', 'ok', 'acepto', 'afirmativo'].includes(normalizada);
 }
 
 // Función para validar respuesta negativa
-function esNegativo(respuesta) {
+export function esNegativo(respuesta) {
   const normalizada = normalizarRespuesta(respuesta);
   return ['no', 'n', '2', 'not', 'nope', 'negativo', 'cancelar'].includes(normalizada);
 }
 
 // Función para validar "listo"
-function esListo(respuesta) {
+export function esListo(respuesta) {
   const normalizada = normalizarRespuesta(respuesta);
   return ['listo', 'terminar', 'finalizar', 'ready', 'fin', 'done'].includes(normalizada);
 }
@@ -57,7 +58,7 @@ function esListo(respuesta) {
 async function savePedido(nombre, productos, telefono) {
   try {
     const pbAdmin = await authAsAdmin();
-    const SUCURSAL_ID = process.env.SUCURSAL_ID || '81w8ac71eg86236';
+    const SUCURSAL_ID = process.env.SUCURSAL_ID || '630sy2wl0s2el8z';
 
     // 1. Crear el pedido principal
     const resumen = productos.map(p => {
@@ -248,10 +249,6 @@ app.post('/webhook', async (req, res) => {
   }
 });
 
-
-
-
-
 // Ruta de salud para monitoreo
 app.get('/health', (req, res) => {
   res.status(200).json({ 
@@ -267,3 +264,6 @@ app.listen(PORT, () => {
   console.log(`🔧 Entorno: ${process.env.NODE_ENV || 'development'}`);
   console.log(`📞 Twilio SID: ${accountSid ? 'Configurado' : 'NO configurado'}`);
 });
+
+// al final de index.mjs
+export default app;

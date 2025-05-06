@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="MediBot Tests" tests="11" failures="0" errors="0" time="4.8389875">
+    <testsuite name="tests/healthCheck.test.js" timestamp="2025-05-06T14:54:09.917Z" hostname="MacBookPro" tests="1" failures="0" errors="0" skipped="0" time="0.012198625">
+        <testcase classname="tests/healthCheck.test.js" name="PA5 - Verifica estado del backend (/health) &gt; Debe responder 200 con JSON de estado OK" time="0.011594875">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/invalidState.test.js" timestamp="2025-05-06T14:54:09.918Z" hostname="MacBookPro" tests="1" failures="0" errors="0" skipped="0" time="0.023558083">
+        <testcase classname="tests/invalidState.test.js" name="PA6 - Validación de conversación rota &gt; Responde con reinicio si el estado no es válido" time="0.023014209">
+            <system-out>
+📥 Mensaje recibido de +56944444444 : cualquier cosa sin flujo previo
+
+            </system-out>
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/normalizarRespuesta.test.js" timestamp="2025-05-06T14:54:09.918Z" hostname="MacBookPro" tests="4" failures="0" errors="0" skipped="0" time="0.002155167">
+        <testcase classname="tests/normalizarRespuesta.test.js" name="PA7 - Normalización y validación de respuestas &gt; Debe normalizar texto quitando acentos y símbolos" time="0.001106709">
+        </testcase>
+        <testcase classname="tests/normalizarRespuesta.test.js" name="PA7 - Normalización y validación de respuestas &gt; Detecta respuestas afirmativas" time="0.000213542">
+        </testcase>
+        <testcase classname="tests/normalizarRespuesta.test.js" name="PA7 - Normalización y validación de respuestas &gt; Detecta respuestas negativas" time="0.000121416">
+        </testcase>
+        <testcase classname="tests/normalizarRespuesta.test.js" name="PA7 - Normalización y validación de respuestas &gt; Detecta &quot;listo&quot;" time="0.000090667">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/parseError.test.js" timestamp="2025-05-06T14:54:09.919Z" hostname="MacBookPro" tests="1" failures="0" errors="0" skipped="0" time="1.528320166">
+        <testcase classname="tests/parseError.test.js" name="PA8 - Manejo de errores al parsear productos &gt; Debe avisar si no se entendieron los productos" time="1.527463375">
+            <system-out>
+📥 Mensaje recibido de +56933333333 : Hola
+
+📥 Mensaje recibido de +56933333333 : Sí
+
+📥 Mensaje recibido de +56933333333 : 1
+
+📥 Mensaje recibido de +56933333333 : Cliente Test
+
+📥 Mensaje recibido de +56933333333 : nfdjkgnkdfg
+
+Respuesta de la IA: &quot;NO_ES_PEDIDO&quot;
+
+            </system-out>
+            <system-err>
+Error en parsePedido: Error: La respuesta no es un array
+    at parsePedido [90m(/Users/giovannimolinagalleguillos/Documents/Repositorios/MVPBackend/MVP/[39mia-parser.js:105:13[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+    at [90m/Users/giovannimolinagalleguillos/Documents/Repositorios/MVPBackend/MVP/[39mindex.mjs:190:35
+
+Error parseando productos: No pude procesar el pedido. Por favor, especifica los productos más claramente.
+
+            </system-err>
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/savePedido.test.js" timestamp="2025-05-06T14:54:09.919Z" hostname="MacBookPro" tests="1" failures="0" errors="0" skipped="0" time="0.743233708">
+        <testcase classname="tests/savePedido.test.js" name="PA9 - crear un nuevo pedido en PocketBase" time="0.742164791">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/webhookAcceptTerms.test.js" timestamp="2025-05-06T14:54:09.919Z" hostname="MacBookPro" tests="1" failures="0" errors="0" skipped="0" time="0.02536">
+        <testcase classname="tests/webhookAcceptTerms.test.js" name="PA10 - Webhook: aceptar términos &gt; Debe responder con menú inicial al aceptar los términos" time="0.02473925">
+            <system-out>
+📥 Mensaje recibido de +56911111111 : hola
+
+📥 Mensaje recibido de +56911111111 : sí
+
+            </system-out>
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/webhookPedidoCompleto.test.js" timestamp="2025-05-06T14:54:09.920Z" hostname="MacBookPro" tests="1" failures="0" errors="0" skipped="0" time="2.480572584">
+        <testcase classname="tests/webhookPedidoCompleto.test.js" name="PA11 - Webhook: flujo completo de pedido &gt; Simula todo el proceso de pedido" time="2.479739833">
+            <system-out>
+📥 Mensaje recibido de +56922222222 : Hola
+
+📥 Mensaje recibido de +56922222222 : Sí
+
+📥 Mensaje recibido de +56922222222 : 1
+
+📥 Mensaje recibido de +56922222222 : Juan Pérez
+
+📥 Mensaje recibido de +56922222222 : 2 amoxicilina 500
+1 paracetamol
+
+Respuesta de la IA: [
+  {
+    &quot;producto&quot;: &quot;amoxicilina&quot;,
+    &quot;cantidad&quot;: 2,
+    &quot;dosis&quot;: &quot;500mg&quot;,
+    &quot;requiereReceta&quot;: true
+  },
+  {
+    &quot;producto&quot;: &quot;paracetamol&quot;,
+    &quot;cantidad&quot;: 1,
+    &quot;dosis&quot;: &quot;&quot;,
+    &quot;requiereReceta&quot;: false
+  }
+]
+
+📥 Mensaje recibido de +56922222222 : listo
+
+📥 Mensaje recibido de +56922222222 : 2
+
+📝 Creando pedido principal...
+
+✅ Pedido principal creado: pedido123
+📦 Guardando productos del pedido...
+
+   ✔ Producto guardado: amoxicilina (ID: pedido123)
+
+   ✔ Producto guardado: paracetamol (ID: pedido123)
+
+            </system-out>
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/webhookStart.test.js" timestamp="2025-05-06T14:54:09.920Z" hostname="MacBookPro" tests="1" failures="0" errors="0" skipped="0" time="0.023589167">
+        <testcase classname="tests/webhookStart.test.js" name="PA12 - Webhook: inicio de conversación &gt; Debe responder con términos y condiciones en el primer mensaje" time="0.023038041">
+            <system-out>
+📥 Mensaje recibido de +56912345678 : Hola
+
+            </system-out>
+        </testcase>
+    </testsuite>
+</testsuites>
