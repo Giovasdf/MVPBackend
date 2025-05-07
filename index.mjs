@@ -126,6 +126,8 @@ app.post('/webhook', async (req, res) => {
       const twiml = new twilio.twiml.MessagingResponse();
       
       twiml.message(
+        `🤖 *Bienvenido a Medibot*\n\n` +
+
         `📜 *Términos y Condiciones*\n\n` +
         `Por favor lee nuestros términos en:\n${terminosURL}\n\n` +
         `Responde *Sí* para aceptar o *No* para cancelar`
