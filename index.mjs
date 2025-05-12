@@ -46,7 +46,7 @@ export function esAfirmativo(respuesta) {
 // Función para validar respuesta negativa
 export function esNegativo(respuesta) {
   const normalizada = normalizarRespuesta(respuesta);
-  return ['no', 'n', '2', 'not', 'nope', 'negativo', 'cancelar'].includes(normalizada);
+  return ['no' ,'n', '2', 'not', 'nope', 'negativo', 'cancelar'].includes(normalizada);
 }
 
 // Función para validar "listo"
